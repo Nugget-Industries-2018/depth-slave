@@ -31,5 +31,5 @@ while sensor.read():
     elif data == 'P':
         response = sensor.pressure()
     else:
-        response = 'command not recognized'
+        response = 'command not recognized: {}'.format(data)
     conn.send(str(response))
