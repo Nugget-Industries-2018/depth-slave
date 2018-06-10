@@ -4,7 +4,7 @@ from ms5837 import ms5837
 
 TCP_IP = 'localhost'
 TCP_PORT = 8083
-BUFFER_SIZE = 2
+BUFFER_SIZE = 1024
 
 sensor = ms5837.MS5837_30BA()
 if not sensor.init():
