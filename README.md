@@ -4,7 +4,7 @@ A smol daemon for reading from the bar30 depth sensor.
 # USE ME
 Depth-slave listens for a TCP socket connection on localhost port 8083.
 
-Upon connection, depth-slave will respond to certain one letter commands with their respective values. The one-letter commands are as follows:
+Upon connection, sending a one letter command through the socket will yield a response from `depth-slave` according to the following table
 
 command character | response
 :---: | :---

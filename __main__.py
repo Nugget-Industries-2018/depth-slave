@@ -15,21 +15,40 @@ Pair = 1013.25  # Pascals
 rho  = 998.23   # kg/m3
 g    = 9.8      # m/s2
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.bind((TCP_IP, TCP_PORT))
-s.listen(1)
-print('PYTHON: listening at {}:{}'.format(TCP_IP, TCP_PORT))
+offset = 0
 
-conn, addr = s.accept()
-while sensor.read():
-    data = conn.recv(BUFFER_SIZE)
-    if not data: break
-    data = str(data).rstrip('\n')
-    print('PYTHON: received: ', data)
-    if data == 'D':
-        response = (sensor.pressure() - Pair) * 100 / (rho * g)
-    elif data == 'P':
-        response = sensor.pressure()
+
+def calc_depth(pressure):
+    return (pressure - Pair) * 100 / (rho * g)
+
+
+def process_cmd(cmd):
+    global offset
+    sensor.read()
+
+    if cmd == 'P':
+        return sensor.pressure()
+    elif cmd == 'p':
+        return sensor.pressure() - offset
+    elif data == 'D':
+        return calc_depth(process_cmd('P'))
+    elif cmd == 'd':
+        return calc_depth(process_cmd('p'))
+    elif cmd == 'Z':
+        offset = sensor.pressure()
     else:
-        response = 'command not recognized: {}'.format(data)
-    conn.send(str(response))
+        return 'command not recognized: {}'.format(cmd)
+
+while 1:
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind((TCP_IP, TCP_PORT))
+    s.listen(1)
+    print('PYTHON: listening at {}:{}'.format(TCP_IP, TCP_PORT))
+
+    conn, addr = s.accept()
+    while 1:
+        data = conn.recv(BUFFER_SIZE)
+        if not data: break
+        data = str(data).rstrip('\n')
+        print('PYTHON: received: ', data)
+        conn.send(str(process_cmd(data)))
