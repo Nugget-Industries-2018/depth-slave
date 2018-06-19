@@ -30,7 +30,7 @@ def process_cmd(cmd):
         return sensor.pressure()
     elif cmd == 'p':
         return sensor.pressure() - offset
-    elif data == 'D':
+    elif cmd == 'D':
         return calc_depth(process_cmd('P'))
     elif cmd == 'd':
         return calc_depth(process_cmd('p'))
@@ -41,6 +41,7 @@ def process_cmd(cmd):
 
 while 1:
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     s.bind((TCP_IP, TCP_PORT))
     s.listen(1)
     print('PYTHON: listening at {}:{}'.format(TCP_IP, TCP_PORT))
